@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>국가 전략기술 분류체계 현황맵</title>
+  <title>국가 기술관리체계 현황맵</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script src="data.js"></script>
@@ -459,46 +459,160 @@
       gap: 8px;
     }
 
-    .subsector-items { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .subsector-items { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
 
-    .tech-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      transition: all 0.15s;
+    .tech-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f172acc;
     }
 
-    .tech-row:hover { background: var(--bg3); border-color: var(--border); }
+    .tech-card summary {
+      list-style: none;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
 
+    .tech-card summary::-webkit-details-marker { display: none; }
+    .tech-card summary:hover { background: var(--bg3); }
+
+    .tech-expand-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 11px;
+      transition: transform 0.15s ease;
+    }
+
+    .tech-card[open] .tech-expand-icon {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(90deg);
+    }
+
+    .tech-main { flex: 1; min-width: 0; }
     .tech-name {
-      flex: 1;
       font-size: 13px;
-      line-height: 1.4;
+      line-height: 1.45;
+      font-weight: 600;
+      margin-bottom: 8px;
     }
 
     .tech-laws {
       display: flex;
-      gap: 4px;
-      flex-shrink: 0;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
     .tl-pill {
-      font-size: 9px;
-      padding: 2px 7px;
-      border-radius: 20px;
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
       border: 1px solid;
       font-weight: 700;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
+
+    .tl-pill.partial { opacity: 0.85; border-style: dashed; }
 
     .tl-a { background: var(--law-a-bg); border-color: var(--law-a); color: #93c5fd; }
     .tl-b { background: var(--law-b-bg); border-color: var(--law-b); color: #c4b5fd; }
     .tl-c { background: var(--law-c-bg); border-color: var(--law-c); color: #6ee7b7; }
     .tl-d { background: var(--law-d-bg); border-color: var(--law-d); color: #fca5a5; }
     .tl-e { background: var(--law-e-bg); border-color: var(--law-e); color: #9ca3af; }
+
+    .tech-detail-panel {
+      padding: 0 12px 12px 44px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .tech-detail-note {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-dim);
+    }
+
+    .law-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .law-detail-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: #0b1220;
+      min-width: 0;
+    }
+
+    .law-detail-card.partial { border-style: dashed; }
+    .law-detail-card.off { opacity: 0.55; }
+
+    .law-detail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .law-detail-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .law-mini-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .law-status-badge {
+      font-size: 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .law-detail-text {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text);
+      word-break: keep-all;
+    }
+
+    .law-detail-empty {
+      color: var(--text-dim);
+      font-size: 12px;
+    }
 
     /* ─── MATRIX VIEW ─── */
     .matrix-wrap {
@@ -707,6 +821,13 @@
       .app { grid-template-columns: 1fr; }
       sidebar { position: relative; height: auto; top: 0; }
       .stats-grid { grid-template-columns: 1fr; }
+      header { padding: 16px 18px; align-items: flex-start; flex-wrap: wrap; }
+      .header-stats { width: 100%; justify-content: space-between; }
+      .sector-header { grid-template-columns: 1fr; }
+      .back-btn { width: 100%; }
+      .law-detail-grid { grid-template-columns: 1fr; }
+      .tech-detail-panel { padding-left: 12px; }
+      .subsector-title { padding: 12px 14px; }
     }
 
     /* scrollbar */
@@ -727,6 +848,57 @@
     /* Highlight filter dim */
     .tech-row.dimmed { opacity: 0.25; }
     .sector-card.dimmed { opacity: 0.3; }
+
+    /* ─── THEME TOGGLE (minimal change) ─── */
+    .theme-toggle {
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    body.light-mode {
+      --bg: #f8fafc;
+      --bg2: #ffffff;
+      --bg3: #eef2f7;
+      --border: #d6deea;
+      --accent: #0ea5e9;
+      --accent2: #6366f1;
+      --text: #0f172a;
+      --text-dim: #64748b;
+      --law-a-bg: #dbeafe;
+      --law-b-bg: #ede9fe;
+      --law-c-bg: #d1fae5;
+      --law-d-bg: #fee2e2;
+      --law-e-bg: #e5e7eb;
+    }
+
+    body.light-mode header {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #eef2ff 100%);
+    }
+
+    body.light-mode .view-btn.active {
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .theme-toggle {
+        padding: 7px 9px;
+        font-size: 12px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -734,7 +906,7 @@
 <header>
   <div>
     <div class="logo-badge">Korea Strategic Tech</div>
-    <h1>국가 전략기술 <span>분류체계 현황맵</span></h1>
+    <h1>국가 기술관리체계 <span>현황맵</span></h1>
   </div>
   <div class="header-stats">
     <div class="hstat">
@@ -750,6 +922,7 @@
       <div class="hstat-label">세부기술</div>
     </div>
   </div>
+  <button id="themeToggle" class="theme-toggle" type="button" aria-label="다크모드 라이트모드 전환">☀️ 라이트</button>
 </header>
 
 <div class="app">
@@ -811,10 +984,45 @@ const LAW_KEYS = ['strategic','tax_strategic','tax_growth','advanced','protectio
 const LAW_CLASSES = { strategic:'a', tax_strategic:'b', tax_growth:'c', advanced:'d', protection:'e' };
 const LAW_SHORT = { strategic:'전략육성법', tax_strategic:'조특-전략', tax_growth:'조특-신성장', advanced:'첨단전략산업법', protection:'산업기술보호법' };
 
+const STATUS_LABEL = { '●':'포함', '':'미포함', '-':'미포함', '○':'미표시' };
+
+function lawStatus(v) {
+  if (v === true) return '●';
+  if (v === false || v == null) return '';
+  const s = String(v).trim();
+  if (s === '●' || s === '○') return s;
+  return s;
+}
+
+function itemHasLaw(item, key) {
+  const s = lawStatus(item.laws[key]);
+  return s === '●';
+}
+
+function itemStatusClass(item, key) {
+  const s = lawStatus(item.laws[key]);
+  return s === '●' ? 'full' : 'off';
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderMultilineText(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
 // Count total techs
 function countTechs() {
   let n = 0;
-  TECH_DATA.sectors.forEach(s => s.subsectors.forEach(ss => { n += ss.items.length; }));
+  TECH_DATA.sectors.forEach(s => s.subsectors.forEach(ss => {
+    n += ss.items.filter(item => LAW_KEYS.some(k => itemHasLaw(item, k))).length;
+  }));
   return n;
 }
 
@@ -830,13 +1038,13 @@ function getLawBadgeClass(key) {
 function sectorLawCoverage(sector) {
   const covered = new Set();
   sector.subsectors.forEach(ss => ss.items.forEach(item => {
-    LAW_KEYS.forEach(k => { if (item.laws[k]) covered.add(k); });
+    LAW_KEYS.forEach(k => { if (itemHasLaw(item, k)) covered.add(k); });
   }));
   return covered;
 }
 
 function techMatchesFilter(item) {
-  return LAW_KEYS.some(k => state.activeLaws.has(k) && item.laws[k]);
+  return LAW_KEYS.some(k => state.activeLaws.has(k) && itemHasLaw(item, k));
 }
 
 function sectorMatchesFilter(sector) {
@@ -864,7 +1072,7 @@ function buildLawFilters() {
     const cls = LAW_CLASSES[k];
     const count = TECH_DATA.sectors.reduce((acc, s) =>
       acc + s.subsectors.reduce((a2, ss) =>
-        a2 + ss.items.filter(i => i.laws[k]).length, 0), 0);
+        a2 + ss.items.filter(i => itemHasLaw(i, k)).length, 0), 0);
     const isActive = state.activeLaws.has(k);
     const el = document.createElement('div');
     el.className = `law-chip ${isActive ? 'active-'+cls : 'inactive'}`;
@@ -1050,17 +1258,55 @@ function renderDetail(main, rcDiv) {
       <div class="subsector-items"></div>
     `;
     const itemsContainer = block.querySelector('.subsector-items');
-    visibleItems.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'tech-row';
-      const pills = LAW_KEYS.filter(k => item.laws[k] && state.activeLaws.has(k)).map(k =>
-        `<span class="tl-pill tl-${LAW_CLASSES[k]}">${LAW_SHORT[k]}</span>`
-      ).join('');
-      row.innerHTML = `
-        <div class="tech-name">${item.name}</div>
-        <div class="tech-laws">${pills}</div>
+
+    visibleItems.forEach((item, idx) => {
+      const card = document.createElement('details');
+      card.className = 'tech-card';
+      if (idx === 0) card.open = true;
+
+      const pills = LAW_KEYS
+        .filter(k => itemHasLaw(item, k) && state.activeLaws.has(k))
+        .map(k => `<span class="tl-pill tl-${LAW_CLASSES[k]}">● ${LAW_SHORT[k]}</span>`)
+        .join('');
+
+      const detailCards = LAW_KEYS
+        .filter(k => state.activeLaws.has(k) && itemHasLaw(item, k))
+        .map(k => {
+          const detail = (item.lawDetails && item.lawDetails[k]) ? renderMultilineText(item.lawDetails[k]) : '';
+          return `
+            <div class="law-detail-card full">
+              <div class="law-detail-head">
+                <div class="law-detail-title" style="color:${getLawColor(k)}">
+                  <span class="law-mini-dot" style="background:${getLawColor(k)}"></span>
+                  <span>${LAW_SHORT[k]}</span>
+                </div>
+                <span class="law-status-badge">● 포함</span>
+              </div>
+              <div class="${detail ? 'law-detail-text' : 'law-detail-empty'}">
+                ${detail || '해당 법령에서 구체 세부기술 문구가 확인되지 않습니다.'}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      const noteBlock = item.note
+        ? `<div class="tech-detail-note"><strong style="color:var(--accent)">비고</strong><div style="margin-top:6px">${renderMultilineText(item.note)}</div></div>`
+        : '';
+
+      card.innerHTML = `
+        <summary>
+          <span class="tech-expand-icon">›</span>
+          <div class="tech-main">
+            <div class="tech-name">${escapeHtml(item.name)}</div>
+            <div class="tech-laws">${pills || '<span style="font-size:12px;color:var(--text-dim)">선택한 법령 기준 포함 기술 없음</span>'}</div>
+          </div>
+        </summary>
+        <div class="tech-detail-panel">
+          ${noteBlock}
+          <div class="law-detail-grid">${detailCards}</div>
+        </div>
       `;
-      itemsContainer.appendChild(row);
+      itemsContainer.appendChild(card);
     });
     container.appendChild(block);
   });
@@ -1116,14 +1362,14 @@ function renderStats(main, rcDiv) {
   const lawSectorCounts = {};
   const lawTechCounts = {};
   LAW_KEYS.forEach(k => {
-    lawSectorCounts[k] = TECH_DATA.sectors.filter(s => s.subsectors.some(ss => ss.items.some(i => i.laws[k]))).length;
-    lawTechCounts[k] = TECH_DATA.sectors.reduce((a,s) => a + s.subsectors.reduce((a2,ss) => a2 + ss.items.filter(i=>i.laws[k]).length, 0), 0);
+    lawSectorCounts[k] = TECH_DATA.sectors.filter(s => s.subsectors.some(ss => ss.items.some(i => itemHasLaw(i, k)))).length;
+    lawTechCounts[k] = TECH_DATA.sectors.reduce((a,s) => a + s.subsectors.reduce((a2,ss) => a2 + ss.items.filter(i=>itemHasLaw(i, k)).length, 0), 0);
   });
 
   // sector coverage counts
   const sectorCoverage = TECH_DATA.sectors.map(s => {
     const cov = sectorLawCoverage(s);
-    const cnt = s.subsectors.reduce((a, ss) => a + ss.items.length, 0);
+    const cnt = s.subsectors.reduce((a, ss) => a + ss.items.filter(i => LAW_KEYS.some(k => itemHasLaw(i, k))).length, 0);
     return { ...s, lawCount: cov.size, techCount: cnt };
   }).sort((a, b) => b.techCount - a.techCount);
 
@@ -1168,7 +1414,7 @@ function renderStats(main, rcDiv) {
   // Law overlap
   const both = {};
   LAW_KEYS.forEach((k1,i) => LAW_KEYS.slice(i+1).forEach(k2 => {
-    const cnt = TECH_DATA.sectors.reduce((a,s) => a + s.subsectors.reduce((a2,ss) => a2 + ss.items.filter(i=>i.laws[k1]&&i.laws[k2]).length, 0), 0);
+    const cnt = TECH_DATA.sectors.reduce((a,s) => a + s.subsectors.reduce((a2,ss) => a2 + ss.items.filter(i=>itemHasLaw(i, k1)&&itemHasLaw(i, k2)).length, 0), 0);
     if (cnt > 0) both[`${LAW_SHORT[k1]} + ${LAW_SHORT[k2]}`] = cnt;
   }));
   const overlapRows = Object.entries(both).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([pair, cnt]) =>
@@ -1220,8 +1466,8 @@ function renderSearch(main, rcDiv) {
 
   const html = results.map(r => {
     const highlight = (s) => s.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
-    const pills = LAW_KEYS.filter(k => r.item.laws[k] && state.activeLaws.has(k)).map(k =>
-      `<span class="tl-pill tl-${LAW_CLASSES[k]}">${LAW_SHORT[k]}</span>`
+    const pills = LAW_KEYS.filter(k => itemHasLaw(r.item, k) && state.activeLaws.has(k)).map(k =>
+      `<span class="tl-pill tl-${LAW_CLASSES[k]}">● ${LAW_SHORT[k]}</span>`
     ).join('');
     return `
       <div class="search-result-item" onclick="state.activeSector=${r.sector.id};state.searchQuery='';document.getElementById('search-input').value='';state.view='overview';buildSectorNav();render()">
@@ -1234,6 +1480,25 @@ function renderSearch(main, rcDiv) {
 
   main.innerHTML = `<div class="search-results">${html}</div>`;
 }
+
+
+const themeToggle = document.getElementById('themeToggle');
+
+function applyTheme(mode) {
+  const isLight = mode === 'light';
+  document.body.classList.toggle('light-mode', isLight);
+  themeToggle.textContent = isLight ? '🌙 다크' : '☀️ 라이트';
+}
+
+const savedTheme = localStorage.getItem('techmap-theme');
+applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+
+themeToggle.addEventListener('click', () => {
+  const nextMode = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+  applyTheme(nextMode);
+  localStorage.setItem('techmap-theme', nextMode);
+});
+
 
 init();
 </script>

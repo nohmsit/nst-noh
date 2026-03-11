@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>국가 기술관리체계 현황맵</title>
+  <meta name="description" content="19개 공통 기술분야와 5대 법령 기준의 국가 기술관리체계 현황맵" />
+  <script src="data.js"></script>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --panel:#ffffff;
+      --panel-2:#f8fafc;
+      --line:#dbe3ef;
+      --text:#0f172a;
+      --sub:#475569;
+      --muted:#64748b;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --radius:20px;
+      --r-sm:14px;
+      --blue:#2563eb;
+      --purple:#7c3aed;
+      --green:#059669;
+      --orange:#ea580c;
+      --gray:#6b7280;
+      --chip:#eef2ff;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+      background:linear-gradient(180deg,#f8fbff 0%,#f5f7fb 100%);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:16px 16px 48px}
+    .hero{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter:blur(16px);
+      background:rgba(245,247,251,.88);
+      border-bottom:1px solid rgba(219,227,239,.85);
+    }
+    .hero-inner{max-width:1200px;margin:0 auto;padding:14px 16px 16px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#eaf2ff;color:var(--blue);font-size:12px;font-weight:700}
+    h1{font-size:22px;line-height:1.25;margin:10px 0 4px}
+    .desc{font-size:14px;color:var(--sub);margin:0}
+    .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .legend span{
+      padding:8px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);
+      font-size:12px;color:var(--sub)
+    }
+    .legend .dot{font-weight:900;color:var(--blue);margin-right:4px}
+    .toolbar{
+      display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px
+    }
+    .searchbox{
+      display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+      border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)
+    }
+    .searchbox input{border:none;outline:none;width:100%;font-size:15px;background:transparent}
+    .chips{display:flex;gap:8px;overflow:auto;padding-bottom:2px;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{
+      white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--sub);
+      border-radius:999px;padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer
+    }
+    .chip.active{background:var(--text);color:#fff;border-color:var(--text)}
+    .section{margin-top:18px}
+    .panel{
+      background:var(--panel); border:1px solid rgba(219,227,239,.95);
+      border-radius:var(--radius); box-shadow:var(--shadow)
+    }
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .stat{padding:16px}
+    .stat strong{display:block;font-size:24px;margin-bottom:4px}
+    .stat span{font-size:13px;color:var(--sub)}
+    .law-grid{display:grid;grid-template-columns:1fr;gap:10px;padding:14px}
+    .law-card{padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel-2)}
+    .law-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .law-name{font-weight:800;font-size:14px}
+    .law-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .law-count{font-size:22px;font-weight:800}
+    .overview{padding:14px;overflow:auto}
+    .overview table{width:100%;border-collapse:separate;border-spacing:0 10px;min-width:780px}
+    .overview th{font-size:12px;color:var(--muted);font-weight:700;text-align:left;padding:0 10px}
+    .overview td{
+      background:var(--panel-2);padding:14px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+      font-size:13px;vertical-align:top
+    }
+    .overview tr td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px;font-weight:800;min-width:170px}
+    .overview tr td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+    .overview .mini{font-size:11px;color:var(--muted);display:block;margin-top:4px}
+    .sector-list{display:grid;gap:14px}
+    .sector-card{padding:16px}
+    .sector-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .sector-title{display:flex;gap:10px;align-items:flex-start}
+    .sector-icon{
+      width:42px;height:42px;display:grid;place-items:center;border-radius:14px;
+      background:#eef4ff;font-size:22px;flex:none
+    }
+    .sector-title h2{font-size:19px;margin:0}
+    .sector-meta{margin-top:4px;font-size:13px;color:var(--sub)}
+    .count-badge{
+      flex:none;padding:10px 12px;border-radius:14px;background:#f8fafc;border:1px solid var(--line);
+      text-align:right
+    }
+    .count-badge strong{display:block;font-size:18px}
+    .count-badge span{font-size:12px;color:var(--muted)}
+    .law-badges,.counts-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .law-badge,.count-pill{
+      padding:8px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px
+    }
+    .law-badge b,.count-pill b{font-weight:800}
+    details.subgroup{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:#fbfdff;overflow:hidden}
+    details.subgroup[open]{background:#fff}
+    details.subgroup > summary{
+      list-style:none;cursor:pointer;padding:14px 16px;font-weight:800;font-size:14px;
+      display:flex;justify-content:space-between;gap:8px;align-items:center
+    }
+    details.subgroup > summary::-webkit-details-marker{display:none}
+    .summary-meta{font-size:12px;font-weight:600;color:var(--muted)}
+    .items{padding:0 12px 12px;display:grid;gap:10px}
+    .item{
+      border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--panel-2)
+    }
+    .item h3{margin:0;font-size:15px;line-height:1.35}
+    .item-laws{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#0f172a;background:#fff;border:1px solid var(--line)
+    }
+    .pill .mark{font-weight:900}
+    .item-note{
+      margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
+      font-size:12px;color:var(--sub);white-space:pre-line
+    }
+    .matrix{
+      margin-top:12px;overflow:auto
+    }
+    .matrix table{width:100%;border-collapse:collapse;min-width:560px}
+    .matrix th,.matrix td{padding:8px 6px;border-bottom:1px solid var(--line);font-size:12px;text-align:center}
+    .matrix th:first-child,.matrix td:first-child{text-align:left}
+    .cell-on{font-size:16px;font-weight:900}
+    .empty{height:18px;display:inline-block;min-width:12px}
+    .empty-state{padding:28px 16px;text-align:center;color:var(--muted);font-size:14px}
+    .footer{margin-top:24px;color:var(--muted);font-size:12px;text-align:center}
+    @media (min-width: 768px){
+      .wrap{padding:20px 20px 56px}
+      .hero-inner{padding:18px 20px}
+      h1{font-size:28px}
+      .toolbar{grid-template-columns:1fr}
+      .stats{grid-template-columns:repeat(4,1fr)}
+      .law-grid{grid-template-columns:repeat(5,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">국가 기술관리체계 · 모바일 최적화</div>
+      <h1 id="page-title"></h1>
+      <p class="desc" id="page-desc"></p>
+      <div class="legend">
+        <span><span class="dot">●</span>해당 법령 분류체계에 포함</span>
+        <span>빈칸은 해당 기술 없음</span>
+        <span>모바일에서는 상단 검색과 칩 필터로 빠르게 탐색</span>
+      </div>
+      <div class="toolbar">
+        <label class="searchbox" aria-label="검색">
+          <span>🔎</span>
+          <input id="searchInput" type="search" placeholder="기술명, 분야명, 비고 검색" />
+        </label>
+        <div class="chips" id="lawChips"></div>
+        <div class="chips" id="sectorChips"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section stats" id="topStats"></section>
+    <section class="section panel">
+      <div class="law-grid" id="lawSummary"></div>
+    </section>
+
+    <section class="section panel">
+      <div class="overview">
+        <table>
+          <thead>
+            <tr>
+              <th>공통 기술분야</th>
+              <th>전략육성법</th>
+              <th>조특법-전략</th>
+              <th>조특법-신성장</th>
+              <th>첨단전략산업법</th>
+              <th>산업기술보호법</th>
+            </tr>
+          </thead>
+          <tbody id="overviewBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section sector-list" id="sectorList"></section>
+    <div class="footer">출처: 범부처 기술관리체계 현황맵 (2026.03) · GitHub Pages용 정적 파일</div>
+  </main>
+
+  <script>
+    const state = {
+      law: 'all',
+      sector: 'all',
+      query: ''
+    };
+
+    const laws = TECH_DATA.meta.laws;
+    const sectors = TECH_DATA.sectors;
+
+    const $ = (s) => document.querySelector(s);
+
+    function escapeHtml(text='') {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function totalItems() {
+      return sectors.reduce((sum, sec) => sum + sec.itemCount, 0);
+    }
+
+    function countByLaw(lawId) {
+      return sectors.reduce((sum, sec) => sum + (sec.counts[lawId] || 0), 0);
+    }
+
+    function includedLawIds(item) {
+      return laws.filter(law => item.laws[law.id]).map(law => law.id);
+    }
+
+    function matchesQuery(sec, query) {
+      if (!query) return true;
+      const q = query.toLowerCase();
+      const haystack = [
+        sec.name,
+        ...Object.values(sec.lawCategories),
+        ...sec.subsectors.flatMap(sub => [
+          sub.name,
+          ...sub.items.flatMap(item => [item.name, item.note || '', ...includedLawIds(item)])
+        ])
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    }
+
+    function itemMatches(item) {
+      const query = state.query.toLowerCase();
+      const lawOk = state.law === 'all' || item.laws[state.law];
+      const queryOk = !query || [item.name, item.note || '', ...includedLawIds(item)].join(' ').toLowerCase().includes(query);
+      return lawOk && queryOk;
+    }
+
+    function sectorMatches(sec) {
+      if (state.sector !== 'all' && sec.name !== state.sector) return false;
+      if (!matchesQuery(sec, state.query)) return false;
+      if (state.law === 'all') return true;
+      return sec.subsectors.some(sub => sub.items.some(item => item.laws[state.law]));
+    }
+
+    function renderTop() {
+      $('#page-title').textContent = TECH_DATA.meta.title;
+      $('#page-desc').textContent = `${TECH_DATA.meta.subtitle} · ${TECH_DATA.meta.source}`;
+
+      $('#topStats').innerHTML = `
+        <article class="panel stat">
+          <strong>${sectors.length}</strong>
+          <span>공통 기술분야</span>
+        </article>
+        <article class="panel stat">
+          <strong>${laws.length}</strong>
+          <span>적용 법령</span>
+        </article>
+        <article class="panel stat">
+          <strong>${totalItems()}</strong>
+          <span>세부기술</span>
+        </article>
+        <article class="panel stat">
+          <strong>${laws.reduce((sum, law) => sum + countByLaw(law.id), 0)}</strong>
+          <span>법령 포함 표시(●)</span>
+        </article>
+      `;
+
+      $('#lawSummary').innerHTML = laws.map(law => `
+        <article class="law-card">
+          <div class="law-top">
+            <div>
+              <div class="law-name">${law.short}</div>
+              <div class="law-sub">${law.name} · ${law.sub}</div>
+            </div>
+            <div class="law-count" style="color:${law.color}">${countByLaw(law.id)}</div>
+          </div>
+        </article>
+      `).join('');
+
+      $('#lawChips').innerHTML = [
+        `<button class="chip ${state.law === 'all' ? 'active' : ''}" data-law="all">전체 법령</button>`,
+        ...laws.map(law => `<button class="chip ${state.law === law.id ? 'active' : ''}" data-law="${law.id}">${law.short}</button>`)
+      ].join('');
+
+      $('#sectorChips').innerHTML = [
+        `<button class="chip ${state.sector === 'all' ? 'active' : ''}" data-sector="all">전체 분야</button>`,
+        ...sectors.map(sec => `<button class="chip ${state.sector === sec.name ? 'active' : ''}" data-sector="${sec.name}">${sec.icon} ${sec.name}</button>`)
+      ].join('');
+
+      document.querySelectorAll('[data-law]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.law = btn.dataset.law;
+          render();
+        });
+      });
+      document.querySelectorAll('[data-sector]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.sector = btn.dataset.sector;
+          render();
+        });
+      });
+    }
+
+    function renderOverview() {
+      const visible = sectors.filter(sectorMatches);
+      $('#overviewBody').innerHTML = visible.map(sec => `
+        <tr>
+          <td>${sec.icon} ${sec.name}<span class="mini">${sec.itemCount}개 세부기술</span></td>
+          ${laws.map(law => `<td>${sec.lawCategories[law.id] && sec.lawCategories[law.id] !== '—' ? escapeHtml(sec.lawCategories[law.id]).replaceAll('\n','<br>') : '<span class="mini">—</span>'}</td>`).join('')}
+        </tr>
+      `).join('') || `<tr><td colspan="6"><div class="empty-state">조건에 맞는 분야가 없습니다.</div></td></tr>`;
+    }
+
+    function renderSectors() {
+      const visible = sectors.filter(sectorMatches);
+      const cards = visible.map(sec => {
+        const filteredSubs = sec.subsectors
+          .map(sub => ({...sub, items: sub.items.filter(itemMatches)}))
+          .filter(sub => sub.items.length > 0 || state.query === '' && state.law === 'all');
+
+        if (filteredSubs.length === 0) return '';
+
+        return `
+          <article class="panel sector-card">
+            <div class="sector-head">
+              <div class="sector-title">
+                <div class="sector-icon">${sec.icon}</div>
+                <div>
+                  <h2>${sec.name}</h2>
+                  <div class="sector-meta">총 ${sec.itemCount}개 세부기술</div>
+                </div>
+              </div>
+              <div class="count-badge">
+                <strong>${filteredSubs.reduce((sum, sub) => sum + sub.items.length, 0)}</strong>
+                <span>현재 표시</span>
+              </div>
+            </div>
+
+            <div class="law-badges">
+              ${laws.map(law => `
+                <span class="law-badge"><b>${law.short}</b> ${sec.lawCategories[law.id] && sec.lawCategories[law.id] !== '—' ? escapeHtml(sec.lawCategories[law.id]) : '—'}</span>
+              `).join('')}
+            </div>
+
+            <div class="counts-row">
+              ${laws.map(law => `<span class="count-pill"><b>${law.short}</b> ● ${sec.counts[law.id]}</span>`).join('')}
+            </div>
+
+            <div class="matrix">
+              <table>
+                <thead>
+                  <tr>
+                    <th>세부기술</th>
+                    ${laws.map(law => `<th>${law.short}</th>`).join('')}
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredSubs.flatMap(sub => sub.items).map(item => `
+                    <tr>
+                      <td>${escapeHtml(item.name)}</td>
+                      ${laws.map(law => `<td>${item.laws[law.id] ? `<span class="cell-on" style="color:${law.color}">●</span>` : `<span class="empty"></span>`}</td>`).join('')}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            ${filteredSubs.map((sub, idx) => `
+              <details class="subgroup" ${idx === 0 ? 'open' : ''}>
+                <summary>
+                  <span>${sub.name}</span>
+                  <span class="summary-meta">${sub.items.length}개 세부기술</span>
+                </summary>
+                <div class="items">
+                  ${sub.items.map(item => `
+                    <article class="item">
+                      <h3>${escapeHtml(item.name)}</h3>
+                      <div class="item-laws">
+                        ${laws.filter(law => item.laws[law.id]).map(law => `
+                          <span class="pill"><span class="mark" style="color:${law.color}">●</span>${law.short}</span>
+                        `).join('') || `<span class="pill">해당 법령 없음</span>`}
+                      </div>
+                      ${item.note ? `<div class="item-note">${escapeHtml(item.note).replaceAll('\n','<br>')}</div>` : ''}
+                    </article>
+                  `).join('')}
+                </div>
+              </details>
+            `).join('')}
+          </article>
+        `;
+      }).filter(Boolean);
+
+      $('#sectorList').innerHTML = cards.join('') || `<section class="panel empty-state">조건에 맞는 세부기술이 없습니다. 검색어나 필터를 바꿔보세요.</section>`;
+    }
+
+    function render() {
+      renderTop();
+      renderOverview();
+      renderSectors();
+      $('#searchInput').value = state.query;
+    }
+
+    $('#searchInput').addEventListener('input', (e) => {
+      state.query = e.target.value.trim();
+      renderOverview();
+      renderSectors();
+    });
+
+    render();
+  </script>
+</body>
+</html>
